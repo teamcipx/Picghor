@@ -9,6 +9,7 @@ import { ImageService } from '../../services/image.service';
   selector: 'app-admin-panel',
   templateUrl: './admin-panel.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
 })
 export class AdminPanelComponent {

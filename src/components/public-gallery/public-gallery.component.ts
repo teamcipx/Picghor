@@ -9,6 +9,7 @@ import { Image } from '../../models/image.model';
   selector: 'app-public-gallery',
   templateUrl: './public-gallery.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
   imports: [CommonModule, RouterLink],
 })
 export class PublicGalleryComponent {

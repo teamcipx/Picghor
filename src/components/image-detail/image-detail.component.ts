@@ -9,6 +9,7 @@ import { Image } from '../../models/image.model';
   selector: 'app-image-detail',
   templateUrl: './image-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
   imports: [CommonModule, RouterLink],
 })
 export class ImageDetailComponent {
