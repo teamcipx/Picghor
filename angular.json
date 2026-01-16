@@ -1,26 +1,43 @@
+
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "",
   "projects": {
-    "app": {
+    "minimalist-image-repository": {
       "projectType": "application",
       "root": "",
-      "sourceRoot": "./",
+      "sourceRoot": "src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": {
-              "base": "./dist",
-              "browser": "."
-            },
-            "browser": "index.tsx",
-            "tsConfig": "tsconfig.json"
+            "outputPath": "dist",
+            "index": "index.html",
+            "browser": "src/main.ts",
+            "polyfills": [],
+            "tsConfig": "tsconfig.app.json",
+            "assets": [
+              "favicon.ico"
+            ],
+            "styles": [],
+            "scripts": []
           },
           "configurations": {
             "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
               "outputHashing": "all"
             },
             "development": {
@@ -33,20 +50,20 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
-          "options": {
-            "port": 3000
-          },
           "configurations": {
             "production": {
-              "buildTarget": "app:build:production"
+              "buildTarget": "minimalist-image-repository:build:production"
             },
             "development": {
-              "buildTarget": "app:build:development"
+              "buildTarget": "minimalist-image-repository:build:development"
             }
           },
           "defaultConfiguration": "development"
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

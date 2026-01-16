@@ -1,0 +1,13 @@
+
+{
+  "builds": [
+    {
+      "src": "angular.json",
+      "use": "@vercel/angular"
+    }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
