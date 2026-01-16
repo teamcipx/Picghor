@@ -1,0 +1,86 @@
+
+<div class="max-w-4xl mx-auto">
+  <div class="mb-6">
+    <a routerLink="/" class="inline-flex items-center text-indigo-600 dark:text-indigo-400 hover:underline">
+      <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+      </svg>
+      Back to Gallery
+    </a>
+  </div>
+
+  @if (image(); as img) {
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden">
+      <img [src]="img.url" [alt]="img.title" class="w-full h-auto max-h-[70vh] object-contain bg-gray-200 dark:bg-gray-700">
+      <div class="p-6 md:p-8">
+        <div class="space-y-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Title</label>
+            <h1 class="text-3xl md:text-4xl font-bold mt-1">{{ img.title }}</h1>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Description</label>
+            <p class="text-gray-700 dark:text-gray-300 mt-1">{{ img.description }}</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Category</label>
+              <div class="mt-1">
+                <span class="bg-indigo-100 text-indigo-800 text-sm font-medium px-2.5 py-0.5 rounded-full dark:bg-indigo-900 dark:text-indigo-300">{{ img.category }}</span>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Keywords</label>
+              <div class="flex flex-wrap gap-2 mt-1">
+                @for (keyword of img.keywords; track keyword) {
+                  <span class="bg-gray-200 text-gray-800 text-sm font-medium px-2.5 py-0.5 rounded-full dark:bg-gray-700 dark:text-gray-300">{{ keyword }}</span>
+                }
+              </div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Image URL</label>
+            <div class="mt-1 flex items-center gap-2">
+              <input type="text" [value]="img.url" readonly class="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm cursor-copy" (click)="$any($event.target).select()">
+              <button (click)="copyUrl(img.url)" [attr.aria-label]="copySuccess() ? 'Copied' : 'Copy URL'" class="relative p-2 rounded-md bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">
+                @if (copySuccess()) {
+                  <svg class="w-5 h-5 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                  </svg>
+                } @else {
+                  <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v3.045m-7.416 0v3.045c0 .212.03.418.084.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+            <button 
+              (click)="downloadImage(img)" 
+              [disabled]="downloading()" 
+              class="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:bg-indigo-400 disabled:cursor-not-allowed">
+              @if (downloading()) {
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Downloading...
+              } @else {
+                <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+                Download Image
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="text-center py-16">
+      <h2 class="text-2xl font-semibold">Image not found</h2>
+      <p class="text-gray-500 mt-2">The image you are looking for does not exist.</p>
+    </div>
+  }
+</div>

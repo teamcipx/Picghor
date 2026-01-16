@@ -1,0 +1,130 @@
+
+@if (loading()) {
+  <div class="space-y-12 animate-pulse">
+    <!-- Hero Skeleton -->
+    <div class="relative rounded-lg h-96 bg-gray-300 dark:bg-gray-700"></div>
+    <!-- Categories Skeleton -->
+    <div class="space-y-4">
+      <div class="h-8 w-48 bg-gray-300 dark:bg-gray-700 rounded"></div>
+      <div class="flex flex-wrap gap-2">
+        <div class="h-10 w-20 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
+        <div class="h-10 w-24 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
+        <div class="h-10 w-28 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
+      </div>
+    </div>
+    <!-- Grid Skeleton -->
+    <div class="space-y-4">
+      <div class="h-8 w-56 bg-gray-300 dark:bg-gray-700 rounded"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="w-full h-64 bg-gray-300 dark:bg-gray-700 rounded-lg"></div>
+        <div class="w-full h-64 bg-gray-300 dark:bg-gray-700 rounded-lg"></div>
+        <div class="w-full h-64 bg-gray-300 dark:bg-gray-700 rounded-lg"></div>
+        <div class="w-full h-64 bg-gray-300 dark:bg-gray-700 rounded-lg sm:hidden lg:block"></div>
+        <div class="w-full h-64 bg-gray-300 dark:bg-gray-700 rounded-lg sm:hidden lg:block"></div>
+        <div class="w-full h-64 bg-gray-300 dark:bg-gray-700 rounded-lg sm:hidden lg:block"></div>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="space-y-12">
+    <!-- Hero Section -->
+    @if (heroImage(); as hero) {
+      <div class="relative rounded-lg overflow-hidden h-96 flex items-center justify-center text-center p-4" [style.background-image]="'url(' + hero.url + ')'" style="background-size: cover; background-position: center;">
+        <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+        <div class="relative z-10 space-y-6">
+          <h1 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight">Discover Your Next Image</h1>
+          <p class="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto">A curated collection of high-quality images, free for personal and commercial use. No attribution required.</p>
+          <div class="relative max-w-xl mx-auto">
+            <input 
+              type="text" 
+              placeholder="Search for photos..."
+              class="w-full px-5 py-4 pr-12 border border-transparent rounded-full bg-white/90 text-gray-900 focus:ring-4 focus:ring-indigo-300 focus:outline-none transition-shadow"
+              [value]="searchTerm()"
+              (input)="onSearch($event)">
+            <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Categories Section -->
+    <div class="space-y-4">
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Browse by Category</h2>
+      <div class="flex flex-wrap gap-2">
+        @for (category of categories(); track category) {
+          <button 
+            (click)="selectCategory(category)"
+            [class]="(selectedCategory() === category || (category === 'All' && selectedCategory() === null))
+              ? 'bg-indigo-600 text-white' 
+              : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'"
+            class="px-4 py-2 text-sm font-semibold rounded-full transition-colors">
+            {{ category }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Image Grid -->
+    <div class="space-y-4">
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Explore Images</h2>
+      @if (filteredImages().length > 0) {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          @for (image of filteredImages(); track image.id) {
+            <a [routerLink]="['/p', image.slug]" class="group block rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-1">
+              <div class="relative">
+                <img [src]="image.url" [alt]="image.title" class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105">
+                
+                <!-- Title Overlay -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <h3 class="text-white text-lg font-semibold truncate">{{ image.title }}</h3>
+                </div>
+
+                <!-- Download Button -->
+                <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button 
+                     (click)="downloadImage($event, image)" 
+                     [disabled]="downloading() === image.id"
+                     class="p-2.5 bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-white rounded-full shadow-md backdrop-blur-sm hover:bg-white dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-wait"
+                     aria-label="Download image">
+                    @if(downloading() === image.id) {
+                      <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    } @else {
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                      </svg>
+                    }
+                  </button>
+                </div>
+              </div>
+            </a>
+          }
+        </div>
+      } @else {
+        <div class="text-center py-16 px-4 bg-white dark:bg-gray-800 rounded-lg">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No images found</h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            @if(searchTerm()){
+              <span>Your search for "{{ searchTerm() }}"</span>
+              @if(selectedCategory()){
+                <span> in category "{{ selectedCategory() }}"</span>
+              }
+              <span> did not match any images.</span>
+            } @else if (selectedCategory()) {
+              <span>There are no images in the "{{ selectedCategory() }}" category.</span>
+            } @else {
+              <span>There are no images in the gallery yet. Upload some in the admin panel!</span>
+            }
+          </p>
+        </div>
+      }
+    </div>
+  </div>
+}

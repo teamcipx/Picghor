@@ -1,0 +1,96 @@
+
+<div class="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+  @if (!authService.isAuthenticated()) {
+    <div class="space-y-4">
+      <h2 class="text-2xl font-bold text-center">Admin Access</h2>
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Secret Password</label>
+        <input 
+          id="password" 
+          type="password"
+          class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          [value]="password()"
+          (input)="password.set($any($event.target).value); loginError.set('')"
+          (keyup.enter)="handleLogin()">
+      </div>
+      @if (loginError()) {
+        <p class="text-red-500 text-sm">{{ loginError() }}</p>
+      }
+      <button 
+        (click)="handleLogin()"
+        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        Authenticate
+      </button>
+    </div>
+  } @else {
+    <form [formGroup]="uploadForm" (ngSubmit)="handleUpload()" class="space-y-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-bold">Add New Image</h2>
+        <button type="button" (click)="authService.logout()" class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline">
+          Logout
+        </button>
+      </div>
+
+      <div>
+        <label for="url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Image URL</label>
+        <input id="url" type="url" formControlName="url" required
+          placeholder="https://example.com/image.jpg"
+          class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+
+      <div>
+        <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+        <input id="title" type="text" formControlName="title" (blur)="slugifyTitle()" required
+          class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+      
+      <div>
+        <label for="slug" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Custom URL Slug</label>
+        <input id="slug" type="text" formControlName="slug" required
+          class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+        <p class="mt-1 text-xs text-gray-500">Auto-generated from title. Use lowercase letters, numbers, and hyphens only.</p>
+      </div>
+
+      <div>
+        <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+        <textarea id="description" formControlName="description" rows="3" required
+          class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+      </div>
+      
+      <div>
+        <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
+        <input id="category" type="text" formControlName="category" required
+          class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+
+      <div>
+        <label for="keywords" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Meta Keywords</label>
+        <input id="keywords" type="text" formControlName="keywords" required
+          class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+        <p class="mt-1 text-xs text-gray-500">Comma-separated values (e.g., nature, forest, sun).</p>
+      </div>
+
+      <div>
+        <button type="submit" [disabled]="uploadForm.invalid || uploadState() === 'uploading'"
+          class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 disabled:cursor-not-allowed">
+          @if (uploadState() === 'uploading') {
+            <span class="animate-pulse">Saving...</span>
+          } @else {
+            <span>Add Image</span>
+          }
+        </button>
+      </div>
+      
+      @if (uploadState() === 'success') {
+        <div class="mt-4 p-3 rounded-md bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-200">
+          Image added successfully!
+        </div>
+      }
+      @if (uploadState() === 'error') {
+        <div class="mt-4 p-3 rounded-md bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-200">
+          {{ errorMessage() }}
+        </div>
+      }
+    </form>
+  }
+</div>

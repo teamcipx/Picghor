@@ -1,0 +1,5 @@
+{
+  "name": "Minimalist Image Repository",
+  "description": "A clean, no-login image discovery platform. Users can browse, search, and download images. A secret admin panel allows for image uploads via the ImgBB service.",
+  "requestFramePermissions": []
+}
